@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+*.log
+.DS_Store
+
+# runtime JSON data stores (seeded fresh on first run)
+packages/*/data/*.json
+!packages/*/data/.gitkeep

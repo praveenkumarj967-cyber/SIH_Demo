@@ -1,0 +1,17 @@
+{
+  "name": "@govstack/mcp-servers",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "aadhar": "node src/aadhar.js",
+    "pan": "node src/pan.js",
+    "gas": "node src/gas.js",
+    "electricity": "node src/electricity.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "axios": "^1.7.7",
+    "zod": "^3.23.8"
+  }
+}

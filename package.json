@@ -1,0 +1,22 @@
+{
+  "name": "gov-interop-platform",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Cross-department interoperability framework: centralized document vault, 4 sample government portals, MCP connectors, and a unified government services chatbot.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "seed": "npm run seed -w @govstack/document-vault-api && npm run seed -w @govstack/portal-aadhar && npm run seed -w @govstack/portal-pan && npm run seed -w @govstack/portal-gas && npm run seed -w @govstack/portal-electricity",
+    "dev": "concurrently -k -n VAULT-API,VAULT-WEB,AADHAR,PAN,GAS,ELECTRICITY,CHATBOT-API,CHATBOT-WEB -c blue,cyan,green,yellow,magenta,red,white,gray \"npm run dev -w @govstack/document-vault-api\" \"npm run dev -w @govstack/document-vault-web\" \"npm run dev -w @govstack/portal-aadhar\" \"npm run dev -w @govstack/portal-pan\" \"npm run dev -w @govstack/portal-gas\" \"npm run dev -w @govstack/portal-electricity\" \"npm run dev -w @govstack/chatbot-api\" \"npm run dev -w @govstack/chatbot-web\"",
+    "dev:portals": "concurrently -k -n AADHAR,PAN,GAS,ELECTRICITY -c green,yellow,magenta,red \"npm run dev -w @govstack/portal-aadhar\" \"npm run dev -w @govstack/portal-pan\" \"npm run dev -w @govstack/portal-gas\" \"npm run dev -w @govstack/portal-electricity\"",
+    "dev:vault": "concurrently -k -n VAULT-API,VAULT-WEB -c blue,cyan \"npm run dev -w @govstack/document-vault-api\" \"npm run dev -w @govstack/document-vault-web\"",
+    "dev:chatbot": "concurrently -k -n CHATBOT-API,CHATBOT-WEB -c white,gray \"npm run dev -w @govstack/chatbot-api\" \"npm run dev -w @govstack/chatbot-web\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}

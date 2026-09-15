@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LPG Cylinder Booking Portal (Demo)</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="gov-header">
+    <div class="emblem">🔥</div>
+    <div>
+      <h1>LPG Cylinder Booking Portal</h1>
+      <p>Demo legacy-style department system — Ministry of Petroleum &amp; Natural Gas</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Book a cylinder</h2>
+      <label>Consumer ID</label>
+      <input id="bookConsumer" class="uppercase-input" placeholder="GC1001" />
+      <button onclick="bookCylinder()">Book now</button>
+      <div id="bookResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>Track bookings</h2>
+      <label>Consumer ID</label>
+      <input id="statusConsumer" class="uppercase-input" placeholder="GC1001" />
+      <button onclick="checkBookings()">Check status</button>
+      <div id="statusResult" class="result"></div>
+    </section>
+
+    <p class="footnote">Demo mobile numbers linked to sample consumer IDs: 9876543210 (GC1001), 9123456780 (GC1002)</p>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

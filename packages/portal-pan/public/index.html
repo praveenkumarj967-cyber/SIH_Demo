@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Income Tax PAN Services Portal (Demo)</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="gov-header">
+    <div class="emblem">🧾</div>
+    <div>
+      <h1>PAN Services Portal</h1>
+      <p>Demo legacy-style department system — Income Tax Department</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Check correction request status</h2>
+      <label>PAN Number</label>
+      <input id="statusPan" class="uppercase-input" maxlength="10" placeholder="ABCDE1234F" />
+      <button onclick="checkStatus()">Check status</button>
+      <div id="statusResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>Submit a correction request</h2>
+      <label>PAN Number</label>
+      <input id="updatePan" class="uppercase-input" maxlength="10" placeholder="ABCDE1234F" />
+      <label for="field">Field to update</label>
+      <select id="field" title="Field to update">
+        <option value="name">Name</option>
+        <option value="address">Address</option>
+        <option value="dob">Date of Birth</option>
+      </select>
+      <label>New value</label>
+      <input id="newValue" placeholder="Enter new value" />
+      <button onclick="submitUpdate()">Submit request</button>
+      <div id="updateResult" class="result"></div>
+    </section>
+
+    <p class="footnote">Demo mobile numbers linked to sample PAN records: 9876543210 (ABCDE1234F), 9123456780 (PQRSX5678K)</p>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

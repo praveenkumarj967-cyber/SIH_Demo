@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UIDAI Aadhar Self-Service Portal (Demo)</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="gov-header">
+    <div class="emblem">🇮🇳</div>
+    <div>
+      <h1>Aadhar Self-Service Portal</h1>
+      <p>Demo legacy-style department system — Government of Bharat</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Check update request status</h2>
+      <label>Aadhar Number</label>
+      <input id="statusAadhar" maxlength="12" placeholder="123456789012" />
+      <button onclick="checkStatus()">Check status</button>
+      <div id="statusResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>Submit a correction request</h2>
+      <label>Aadhar Number</label>
+      <input id="updateAadhar" maxlength="12" placeholder="123456789012" />
+      <label for="field">Field to update</label>
+      <select id="field" title="Field to update">
+        <option value="name">Name</option>
+        <option value="address">Address</option>
+        <option value="dob">Date of Birth</option>
+      </select>
+      <label>New value</label>
+      <input id="newValue" placeholder="Enter new value" />
+      <button onclick="submitUpdate()">Submit request</button>
+      <div id="updateResult" class="result"></div>
+    </section>
+
+    <p class="footnote">Demo mobile numbers linked to sample Aadhar records: 9876543210 (123456789012), 9123456780 (234567890123)</p>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

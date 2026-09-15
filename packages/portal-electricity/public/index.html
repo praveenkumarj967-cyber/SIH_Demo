@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electricity Bill Payment Portal (Demo)</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="gov-header">
+    <div class="emblem">💡</div>
+    <div>
+      <h1>Electricity Bill Payment Portal</h1>
+      <p>Demo legacy-style department system — State Electricity Board</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Check current bill</h2>
+      <label>Consumer Number</label>
+      <input id="billConsumer" class="uppercase-input" placeholder="EL5001" />
+      <button onclick="checkBill()">Check bill</button>
+      <div id="billResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>Pay bill</h2>
+      <label>Consumer Number</label>
+      <input id="payConsumer" class="uppercase-input" placeholder="EL5001" />
+      <label>Amount (₹)</label>
+      <input id="payAmount" type="number" placeholder="842" />
+      <button onclick="payBill()">Pay now</button>
+      <div id="payResult" class="result"></div>
+    </section>
+
+    <p class="footnote">Demo mobile numbers linked to sample consumer numbers: 9876543210 (EL5001), 9123456780 (EL5002)</p>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
