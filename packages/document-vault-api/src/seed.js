@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { encrypt, maskValue } from "@govstack/shared";
 import { usersStore, documentsStore, officialsStore, auditLogger } from "./store.js";
 
-const ENC_KEY = process.env.VAULT_ENC_KEY;
+const ENC_KEY = process.env.VAULT_ENC_KEY || "4f3c2a1e9b8d7c6a5f4e3d2c1b0a99887766554433221100ffeeddccbbaa9988";
 
 function seedDocument(mobileNumber, type, label, fullValue) {
   return {

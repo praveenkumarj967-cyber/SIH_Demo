@@ -5,7 +5,7 @@ import { createOtp, verifyOtp } from "./otpService.js";
 import { requireAuth } from "./middleware.js";
 
 const router = Router();
-const ENC_KEY = process.env.VAULT_ENC_KEY;
+const ENC_KEY = process.env.VAULT_ENC_KEY || "4f3c2a1e9b8d7c6a5f4e3d2c1b0a99887766554433221100ffeeddccbbaa9988";
 const REVEAL_TTL_SECONDS = Number(process.env.REVEAL_TTL_SECONDS || 30);
 
 function maskedDoc(doc) {
