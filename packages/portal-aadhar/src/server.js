@@ -61,6 +61,41 @@ app.post("/api/update-request", (req, res) => {
   res.json({ requestId: request.id, status: "PENDING" });
 });
 
+app.post("/api/verify-aadhar", (req, res) => {
+  const { aadharNumber, name, mobileNumber } = req.body || {};
+  const { records } = recordsStore.read();
+  
+  const cleanInputAadhar = aadharNumber ? aadharNumber.replace(/\s/g, "") : null;
+  
+  const record = records.find((r) => {
+    const cleanRecordAadhar = r.aadharNumber.replace(/\s/g, "");
+    if (cleanInputAadhar) {
+      return cleanRecordAadhar === cleanInputAadhar;
+    }
+    return mobileNumber && r.mobileNumber === mobileNumber;
+  });
+
+  if (!record) {
+    return res.status(404).json({ verified: false, error: "UIDAI Verification Failed: Aadhar number not found in UIDAI central database." });
+  }
+
+  auditLogger.log({ actor: aadharNumber || mobileNumber, action: "UIDAI_EKYC_VERIFICATION", target: record.aadharNumber });
+
+  res.json({
+    verified: true,
+    uidaiReference: `UIDAI-EKYC-${Date.now()}`,
+    record: {
+      aadharNumber: record.aadharNumber,
+      name: record.name,
+      dob: record.dob,
+      address: record.address,
+      gender: record.gender || "Female",
+    },
+    verificationSource: "UIDAI_CENTRAL_EKYC",
+    verifiedAt: new Date().toISOString(),
+  });
+});
+
 app.get("/api/health", (_req, res) => res.json({ status: "ok", service: "portal-aadhar" }));
 
 const PORT = process.env.PORT || 4101;

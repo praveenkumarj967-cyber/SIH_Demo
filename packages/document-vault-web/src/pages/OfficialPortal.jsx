@@ -6,8 +6,12 @@ import { downloadDocumentImage } from "../utils/documentArt.js";
 
 export default function OfficialPortal() {
   const { official, setOfficial } = useAuth();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [loginMode, setLoginMode] = useState("otp"); // "otp" or "password"
+  const [username, setUsername] = useState("officer1");
+  const [password, setPassword] = useState("Officer@123");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpInfo, setOtpInfo] = useState("");
   const [loginError, setLoginError] = useState("");
 
   const [mobileNumber, setMobileNumber] = useState("");
@@ -21,7 +25,42 @@ export default function OfficialPortal() {
   const [error, setError] = useState("");
   const pollRef = useRef(null);
 
-  const login = async (e) => {
+  const requestOtp = async (e) => {
+    e?.preventDefault();
+    setLoginError("");
+    setOtpInfo("");
+    try {
+      const { data } = await api.post("/api/official/request-otp", { identifier: username });
+      setOtpSent(true);
+      setOtpInfo(data.message);
+
+      // Auto check inbox in dev mode
+      try {
+        const { data: inbox } = await api.get(`/api/dev/inbox/${data.mobileNumber || "9876543210"}`);
+        if (inbox.messages?.length > 0) {
+          const match = inbox.messages[0].message.match(/\b\d{6}\b/);
+          if (match) setOtp(match[0]);
+        }
+      } catch (err) {
+        console.warn("Dev inbox check failed", err);
+      }
+    } catch (err) {
+      setLoginError(err.response?.data?.error || "Failed to request OTP.");
+    }
+  };
+
+  const loginWithOtp = async (e) => {
+    e.preventDefault();
+    setLoginError("");
+    try {
+      const { data } = await api.post("/api/official/verify-otp", { identifier: username, otp });
+      setOfficial({ token: data.token, name: data.name, department: data.department });
+    } catch (err) {
+      setLoginError(err.response?.data?.error || "OTP Verification failed.");
+    }
+  };
+
+  const loginWithPassword = async (e) => {
     e.preventDefault();
     setLoginError("");
     try {
@@ -87,17 +126,82 @@ export default function OfficialPortal() {
   if (!official) {
     return (
       <div className="page-center">
-        <form className="auth-card" onSubmit={login}>
+        <div className="auth-card">
           <h1>Official Console</h1>
           <p className="tagline">Consolidated, consent-gated view of citizen records.</p>
-          <label>Username</label>
-          <input className="text-input" value={username} onChange={(e) => setUsername(e.target.value)} />
-          <label>Password</label>
-          <input className="text-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          {loginError && <div className="form-error">{loginError}</div>}
-          <button className="btn-primary full-width" type="submit">Sign in</button>
-          <p className="hint">Demo login: officer1 / Officer@123</p>
-        </form>
+          
+          <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+            <button
+              type="button"
+              className={loginMode === "otp" ? "btn-primary" : "btn-secondary"}
+              style={{ flex: 1 }}
+              onClick={() => setLoginMode("otp")}
+            >
+              📲 OTP Login
+            </button>
+            <button
+              type="button"
+              className={loginMode === "password" ? "btn-primary" : "btn-secondary"}
+              style={{ flex: 1 }}
+              onClick={() => setLoginMode("password")}
+            >
+              🔑 Password Login
+            </button>
+          </div>
+
+          {loginMode === "otp" ? (
+            <form onSubmit={otpSent ? loginWithOtp : requestOtp}>
+              <label>Official Username / Mobile</label>
+              <input
+                className="text-input"
+                placeholder="officer1 or registered mobile"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              {otpSent && (
+                <>
+                  <label style={{ marginTop: "12px" }}>Enter 6-Digit OTP</label>
+                  <input
+                    className="text-input"
+                    placeholder="Enter OTP"
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                  />
+                </>
+              )}
+              {otpInfo && <div style={{ color: "#059669", fontSize: "0.875rem", marginTop: "8px" }}>{otpInfo}</div>}
+              {loginError && <div className="form-error">{loginError}</div>}
+              <div style={{ marginTop: "16px", display: "flex", gap: "8px" }}>
+                {!otpSent ? (
+                  <button className="btn-primary full-width" type="submit">
+                    Send OTP
+                  </button>
+                ) : (
+                  <>
+                    <button className="btn-primary" style={{ flex: 1 }} type="submit">
+                      Verify OTP & Sign In
+                    </button>
+                    <button className="btn-secondary" type="button" onClick={requestOtp}>
+                      Resend OTP
+                    </button>
+                  </>
+                )}
+              </div>
+              <p className="hint" style={{ marginTop: "12px" }}>Demo official: officer1 or 9876543210</p>
+            </form>
+          ) : (
+            <form onSubmit={loginWithPassword}>
+              <label>Username</label>
+              <input className="text-input" value={username} onChange={(e) => setUsername(e.target.value)} />
+              <label style={{ marginTop: "8px" }}>Password</label>
+              <input className="text-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              {loginError && <div className="form-error">{loginError}</div>}
+              <button className="btn-primary full-width" style={{ marginTop: "16px" }} type="submit">Sign in</button>
+              <p className="hint" style={{ marginTop: "12px" }}>Demo login: officer1 / Officer@123</p>
+            </form>
+          )}
+        </div>
       </div>
     );
   }

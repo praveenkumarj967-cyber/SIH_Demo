@@ -93,6 +93,47 @@ export default function Dashboard() {
     }, 1000);
   };
 
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [newType, setNewType] = useState("AADHAR");
+  const [newValue, setNewValue] = useState("");
+  const [newLabel, setNewLabel] = useState("");
+  const [uploadError, setUploadError] = useState("");
+  const [uploadStatus, setUploadStatus] = useState("");
+  const [uploading, setUploading] = useState(false);
+
+  const handleUploadAndVerify = async (e) => {
+    e.preventDefault();
+    setUploadError("");
+    setUploadStatus("");
+    if (!newValue.trim()) {
+      setUploadError("Enter the document number/value.");
+      return;
+    }
+    setUploading(true);
+    setUploadStatus("Connecting to central issuer registry (UIDAI / Income Tax)...");
+    try {
+      const { data } = await api.post(
+        "/api/documents/upload",
+        { type: newType, label: newLabel || `${newType} Card`, value: newValue.trim() },
+        authHeader(citizen.token)
+      );
+      setUploadStatus(`✓ Verified via ${data.verification?.badge || "Issuer"}!`);
+      // Reload documents
+      const docsRes = await api.get("/api/documents", authHeader(citizen.token));
+      setDocuments(docsRes.data.documents);
+      setTimeout(() => {
+        setAddModalOpen(false);
+        setNewValue("");
+        setUploadStatus("");
+        setUploading(false);
+      }, 1200);
+    } catch (err) {
+      setUploading(false);
+      setUploadStatus("");
+      setUploadError(err.response?.data?.error || "Verification failed.");
+    }
+  };
+
   const logout = () => {
     setCitizen(null);
     navigate("/");
@@ -102,8 +143,9 @@ export default function Dashboard() {
     <div className="page">
       <header className="topbar">
         <h2>DigiVault</h2>
-        <div>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
           <span className="welcome-text">Hello, {citizen?.name}</span>
+          <button className="btn-primary" onClick={() => setAddModalOpen(true)}>+ Add / Verify Document</button>
           <button className="btn-secondary" onClick={logout}>Logout</button>
         </div>
       </header>
@@ -131,6 +173,52 @@ export default function Dashboard() {
           Unlock {selected.size > 0 ? `${selected.size} document(s)` : ""} with OTP
         </button>
       </div>
+
+      {addModalOpen && (
+        <div className="modal-backdrop" onClick={() => setAddModalOpen(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "440px" }}>
+            <h2>➕ Add & Live Verify Document</h2>
+            <p className="tagline">Every uploaded document is verified live against UIDAI / Department servers before insertion into your Vault.</p>
+            <form onSubmit={handleUploadAndVerify}>
+              <label>Document Type</label>
+              <select className="text-input" value={newType} onChange={(e) => setNewType(e.target.value)}>
+                <option value="AADHAR">Aadhar Card (Verifies with UIDAI Central Server)</option>
+                <option value="PAN">PAN Card (Verifies with Income Tax Dept)</option>
+                <option value="DRIVING_LICENSE">Driving Licence</option>
+                <option value="MARKSHEET">10th Marksheet</option>
+              </select>
+
+              <label style={{ marginTop: "10px" }}>Document Label</label>
+              <input
+                className="text-input"
+                placeholder="e.g. Aadhar Card"
+                value={newLabel}
+                onChange={(e) => setNewLabel(e.target.value)}
+              />
+
+              <label style={{ marginTop: "10px" }}>Document Number / Value</label>
+              <input
+                className="text-input"
+                placeholder={newType === "AADHAR" ? "1234 5678 9012" : "ABCDE1234F"}
+                value={newValue}
+                onChange={(e) => setNewValue(e.target.value)}
+              />
+
+              {uploadStatus && <div style={{ color: "#0284c7", fontSize: "0.875rem", marginTop: "10px", fontWeight: "600" }}>{uploadStatus}</div>}
+              {uploadError && <div className="form-error" style={{ marginTop: "10px" }}>{uploadError}</div>}
+
+              <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
+                <button className="btn-primary" style={{ flex: 1 }} type="submit" disabled={uploading}>
+                  {uploading ? "Verifying..." : "Upload & Verify with Issuer"}
+                </button>
+                <button className="btn-secondary" type="button" onClick={() => setAddModalOpen(false)}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {modalOpen && (
         <OtpModal

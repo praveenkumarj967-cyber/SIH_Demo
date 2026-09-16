@@ -25,6 +25,46 @@
     </section>
 
     <section class="card">
+      <h2>Apply for New Connection / Subsidy</h2>
+      <p style="font-size: 13px; color: var(--muted); margin-top: -6px; margin-bottom: 16px;">Submit required identity proof (Aadhar / PAN) via Photo Upload or direct DigiVault OTP retrieval.</p>
+      
+      <label>Applicant Full Name</label>
+      <input id="appName" placeholder="e.g. Asha Rao" />
+      
+      <label>Mobile Number</label>
+      <input id="appMobile" placeholder="e.g. 9876543210" maxlength="10" />
+
+      <label>Identity Proof (Aadhar Card)</label>
+      <div class="doc-option-toggle">
+        <button id="btnOptPhoto" class="btn-toggle active" type="button" onclick="switchDocMode('photo')">📷 Upload Photo / File</button>
+        <button id="btnOptVault" class="btn-toggle" type="button" onclick="switchDocMode('vault')">🔐 Retrieve from DigiVault via OTP</button>
+      </div>
+
+      <!-- Option 1: File/Photo Upload -->
+      <div id="sectionPhotoUpload" class="doc-box">
+        <label style="margin-top:0;">Upload Document Photo (JPEG/PNG/PDF)</label>
+        <input type="file" id="fileDocPhoto" accept="image/*,.pdf" onchange="handleDocPhotoUpload(event)" />
+        <div id="photoPreviewContainer" style="display:none; margin-top:10px; align-items:center; gap:12px;">
+          <img id="photoImgPreview" style="max-height:80px; border-radius:8px; border:1px solid #cbd5e1;" alt="Uploaded Document Preview" />
+          <div>
+            <span id="photoFileName" style="font-size:13px; font-weight:600; display:block;"></span>
+            <span style="font-size:12px; color:#059669; font-weight:700;">✓ Document photo attached</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Option 2: DigiVault OTP Retrieval -->
+      <div id="sectionVaultFetch" class="doc-box" style="display:none;">
+        <p style="font-size:13px; color:var(--muted); margin-top:0;">Fetch your verified Aadhar Card directly from your secure citizen Vault using a 1-time OTP.</p>
+        <button class="btn-secondary" type="button" onclick="requestVaultDocOtp()">Fetch Aadhar from DigiVault via OTP</button>
+        <div id="vaultDocStatus" class="result"></div>
+      </div>
+
+      <button style="margin-top: 18px; width: 100%; font-size: 16px;" onclick="submitGasApplication()">Submit Application</button>
+      <div id="appResult" class="result"></div>
+    </section>
+
+    <section class="card">
       <h2>Track bookings</h2>
       <label>Consumer ID</label>
       <input id="statusConsumer" class="uppercase-input" placeholder="GC1001" />

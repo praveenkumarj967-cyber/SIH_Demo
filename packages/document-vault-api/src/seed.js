@@ -19,36 +19,38 @@ function seedDocument(mobileNumber, type, label, fullValue) {
 }
 
 export function seed() {
-  if (!usersStore.isEmpty("users")) {
-    console.log("[document-vault-api] Data already seeded, skipping.");
-    return;
+  if (usersStore.isEmpty("users")) {
+    usersStore.update((data) => {
+      data.users.push(
+        { mobileNumber: "9876543210", name: "Asha Rao", createdAt: new Date().toISOString() },
+        { mobileNumber: "9123456780", name: "Ravi Kumar", createdAt: new Date().toISOString() }
+      );
+    });
   }
 
-  usersStore.update((data) => {
-    data.users.push(
-      { mobileNumber: "9876543210", name: "Asha Rao", createdAt: new Date().toISOString() },
-      { mobileNumber: "9123456780", name: "Ravi Kumar", createdAt: new Date().toISOString() }
-    );
-  });
-
-  documentsStore.update((data) => {
-    data.documents.push(
-      seedDocument("9876543210", "AADHAR", "Aadhar Card", "1234 5678 9012"),
-      seedDocument("9876543210", "PAN", "PAN Card", "ABCDE1234F"),
-      seedDocument("9876543210", "DRIVING_LICENSE", "Driving Licence", "KA0120230001234"),
-      seedDocument("9876543210", "MARKSHEET", "10th Marksheet", "SSLC/2010/00123456"),
-      seedDocument("9123456780", "AADHAR", "Aadhar Card", "5678 1234 4321"),
-      seedDocument("9123456780", "PAN", "PAN Card", "PQRSX5678K")
-    );
-  });
+  if (documentsStore.isEmpty("documents")) {
+    documentsStore.update((data) => {
+      data.documents.push(
+        seedDocument("9876543210", "AADHAR", "Aadhar Card", "1234 5678 9012"),
+        seedDocument("9876543210", "PAN", "PAN Card", "ABCDE1234F"),
+        seedDocument("9876543210", "DRIVING_LICENSE", "Driving Licence", "KA0120230001234"),
+        seedDocument("9876543210", "MARKSHEET", "10th Marksheet", "SSLC/2010/00123456"),
+        seedDocument("9123456780", "AADHAR", "Aadhar Card", "5678 1234 4321"),
+        seedDocument("9123456780", "PAN", "PAN Card", "PQRSX5678K")
+      );
+    });
+  }
 
   officialsStore.update((data) => {
-    data.officials.push({
-      username: "officer1",
-      passwordHash: bcrypt.hashSync("Officer@123", 10),
-      name: "Officer Meera Nair",
-      department: "District e-Governance Cell",
-    });
+    data.officials = [
+      {
+        username: "officer1",
+        mobileNumber: "9876543210",
+        passwordHash: bcrypt.hashSync("Officer@123", 10),
+        name: "Officer Meera Nair",
+        department: "District e-Governance Cell",
+      },
+    ];
   });
 
   auditLogger.log({ actor: "system", action: "SEED_DATA_LOADED", target: "document-vault-api", meta: {} });
@@ -56,6 +58,4 @@ export function seed() {
   console.log("[document-vault-api] Demo official login: officer1 / Officer@123");
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  seed();
-}
+seed();
